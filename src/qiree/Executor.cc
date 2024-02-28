@@ -249,6 +249,7 @@ void QIREE_QIS_FUNCTION(z, ctl)(std::uintptr_t arg1, std::uintptr_t arg2)
 {
     return q_interface_->z(Array{arg1}, Qubit{arg2});
 }
+
 //---------------------------------------------------------------------------//
 // ASSERTIONS
 //---------------------------------------------------------------------------//
@@ -263,6 +264,7 @@ void QIREE_QIS_FUNCTION(assertmeasurementprobability,
     return q_interface_->assertmeasurementprobability(
         Array{arg1}, Array{arg2}, Result{arg3}, arg4, String{arg5}, arg6);
 }
+
 void QIREE_QIS_FUNCTION(assertmeasurementprobability, ctl)(std::uintptr_t arg1,
                                                            std::uintptr_t arg2)
 {

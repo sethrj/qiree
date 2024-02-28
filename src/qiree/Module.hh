@@ -48,6 +48,9 @@ class Module
     // Translate module attributes into flags
     ModuleFlags load_module_flags() const;
 
+    // Dump LLVM text IR assembly to a strem
+    void print(std::ostream& os) const;
+
     //! True if the module has been constructed (and not moved)
     explicit operator bool() const { return static_cast<bool>(module_); }
 

@@ -13,8 +13,10 @@
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Module.h>
+#include <llvm/IRPrinter/IRPrintingPasses.h>
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/Support/SourceMgr.h>
+#include <llvm/Support/raw_os_ostream.h>
 
 #include "Assert.hh"
 
@@ -208,6 +210,16 @@ ModuleFlags Module::load_module_flags() const
     QIREE_EXTRACT(dynamic_result_management);
 
     return flags;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * Dump LLVM text IR assembly to a strem.
+ */
+void Module::print(std::ostream& os) const
+{
+    QIREE_EXPECT(*this);
+    llvm::raw_os_ostream(os) << *module_;
 }
 
 //---------------------------------------------------------------------------//

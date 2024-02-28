@@ -41,6 +41,16 @@ TEST_F(ModuleTest, minimal)
     EXPECT_FALSE(flags.dynamic_qubit_management);
     EXPECT_FALSE(flags.dynamic_result_management);
 
+    // Test print
+    std::string const output = [&m] {
+        std::ostringstream os;
+        m.print(os);
+        return os.str();
+    }();
+    EXPECT_NE(std::string::npos,
+              output.find("attributes #0 = { \"entry_point\""))
+        << "Actual string: " << output;
+
     // Test move semantics
     Module other(std::move(m));
     EXPECT_FALSE(m);
