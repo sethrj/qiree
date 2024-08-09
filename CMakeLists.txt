@@ -12,7 +12,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/cmake/CgvFindVersion.cmake")
 cgv_find_version(QIREE)
 
 project(QIREE VERSION "${QIREE_VERSION}" LANGUAGES CXX)
-cmake_policy(VERSION 3.12...3.22)
+cmake_policy(VERSION 3.12...3.30)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
