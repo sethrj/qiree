@@ -298,13 +298,13 @@ void QIREE_RT_FUNCTION(result_record_output)(std::uintptr_t r,
 /*!
  * Construct with a QIR input filename.
  */
-Executor::Executor(Module&& module)
-    : entrypoint_{module.entrypoint_}, module_{module.module_.get()}
+Executor::Executor(Module&& module) : entrypoint_{module.entrypoint()}
 {
     QIREE_EXPECT(module);
-    QIREE_EXPECT(entrypoint_ && module_);
+    QIREE_EXPECT(entrypoint_);
 
     // Save module and entry point attributes
+    module_ = module.get();
     entry_point_attrs_ = module.load_entry_point_attrs();
     module_flags_ = module.load_module_flags();
 
@@ -315,7 +315,7 @@ Executor::Executor(Module&& module)
 
     // Create execution engine by capturing the module
     ee_ = [&module] {
-        llvm::EngineBuilder builder{std::move(module.module_)};
+        llvm::EngineBuilder builder{std::move(module).release()};
 
         // Pass a reference to a string for diagnosing errors
         std::string err_str;
@@ -326,7 +326,10 @@ Executor::Executor(Module&& module)
         opts.ExceptionModel = llvm::ExceptionHandling::DwarfCFI;
         builder.setTargetOptions(opts);
 
-        // Create the builder, or throw an exception with the failure
+        // Create the builder, or throw an exception with the failure.
+        // *note*: the module ownership is passed through this function through
+        // to the resulting execution, so our saved "module_" pointer will
+        // still be valid.
         std::unique_ptr<llvm::ExecutionEngine> ee{builder.create()};
         QIREE_VALIDATE(ee, << "failed to create execution engine: " << err_str);
         return ee;

@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "Assert.hh"
 #include "Types.hh"
 
 namespace llvm
@@ -60,13 +61,32 @@ class Module
     //! True if the module has been constructed (and not moved)
     explicit operator bool() const { return static_cast<bool>(module_); }
 
-  private:
-    std::unique_ptr<llvm::Module> module_;
-    llvm::Function* entrypoint_{nullptr};
+    //!@{
+    //! \name Mutators
 
-    // Make Executor a friend so it can take ownership of the pointer
-    friend class Executor;
+    //! Release ownership of the embedded module
+    UPModule release() { return std::move(module_); }
+
+    //! Access the embedded module (maybe null)
+    llvm::Module* get() { return module_.get(); }
+
+    // Access the quantum kernel function
+    inline llvm::Function* entrypoint();
+
+  private:
+    UPModule module_;
+    llvm::Function* entrypoint_{nullptr};
 };
+
+//---------------------------------------------------------------------------//
+/*!
+ * Access the quantum kernel function.
+ */
+llvm::Function* Module::entrypoint()
+{
+    QIREE_ASSERT(*this);
+    return entrypoint_;
+}
 
 //---------------------------------------------------------------------------//
 }  // namespace qiree
