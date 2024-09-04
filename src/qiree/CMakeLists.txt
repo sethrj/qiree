@@ -16,6 +16,7 @@ llvm_map_components_to_libnames(_llvm_libs
 
 qiree_add_library(qiree
   Assert.cc
+  BlockAnnotator.cc
   Module.cc
   Executor.cc
   QuantumNotImpl.cc

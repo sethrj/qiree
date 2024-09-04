@@ -43,6 +43,7 @@ endfunction()
 # QIREE TESTS
 #---------------------------------------------------------------------------##
 
+qiree_add_test(qiree BlockAnnotator)
 qiree_add_test(qiree Executor)
 qiree_add_test(qiree Module)
 
