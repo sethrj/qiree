@@ -49,16 +49,25 @@ endif()
 set(_doxy_version_hex 1) # TODO only if needed
 
 # Documentation usage
-set(DOXYGEN_FULL_PATH_NAMES NO)
-set(DOXYGEN_MACRO_EXPANSION YES)
-set(DOXYGEN_JAVADOC_AUTOBRIEF YES)
-set(DOXYGEN_QT_AUTOBRIEF YES)
 set(DOXYGEN_DISTRIBUTE_GROUP_DOC YES)
-set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${PROJECT_SOURCE_DIR}/README.md")
-set(DOXYGEN_FORMULA_MACROFILE "${CMAKE_CURRENT_SOURCE_DIR}/_static/macros.tex")
 set(DOXYGEN_EXTRA_PACKAGES "amsmath")
+set(DOXYGEN_FORMULA_MACROFILE "${CMAKE_CURRENT_SOURCE_DIR}/_static/macros.tex")
+set(DOXYGEN_FULL_PATH_NAMES NO)
+set(DOXYGEN_IMAGE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/_static")
+set(DOXYGEN_JAVADOC_AUTOBRIEF YES)
+set(DOXYGEN_MACRO_EXPANSION YES)
 set(DOXYGEN_PREDEFINED "__DOXYGEN__=${_doxy_version_hex}")
+set(DOXYGEN_QT_AUTOBRIEF YES)
 set(DOXYGEN_USE_MATHJAX YES)
+set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${PROJECT_SOURCE_DIR}/README.md")
+
+set(DOXYGEN_ALIASES
+  "cite{1}=\"[\\1]\""
+  "citep{2}=\"([\\1](\\2))\""
+  "citet{2}=\"[\\1](\\2)\""
+  "rst=\"^^\\if (0)^^\""
+  "endrst=\"^^\\endif^^\""
+)
 
 # Verbosity/warning levels
 qiree_set_default(DOXYGEN_QUIET YES)
@@ -154,20 +163,20 @@ endfunction()
 set(QIREE_USE_BREATHE ${QIREE_USE_Breathe})
 set(QIREE_USE_FURO ${QIREE_USE_Furo})
 set(QIREE_USE_SPHINXBIBTEX ${QIREE_USE_SphinxBibtex})
-if(QIR-EE_VERSION STREQUAL QIR-EE_VERSION_STRING)
-  set(QIR-EE_SHORT_VERSION "${QIR-EE_VERSION}")
-elseif("${QIR-EE_VERSION_STRING}" MATCHES
+if(QIREE_VERSION STREQUAL QIREE_VERSION_STRING)
+  set(QIREE_SHORT_VERSION "${QIREE_VERSION}")
+elseif("${QIREE_VERSION_STRING}" MATCHES
     "^(.*-rc[.-][0-9]+)(\\.[0-9]+\\+[0-9a-f]+)$")
   # Use release candidate, stripping off stuff since the tag
-  set(QIR-EE_SHORT_VERSION "${CMAKE_MATCH_1}")
+  set(QIREE_SHORT_VERSION "${CMAKE_MATCH_1}")
 else()
   # Development version
   set(_patch "${PROJECT_VERSION_PATCH}")
-  if(NOT QIR-EE_VERSION_STRING MATCHES "-dev")
+  if(NOT QIREE_VERSION_STRING MATCHES "-dev")
     # Before the next release
     math(EXPR _patch "${PROJECT_VERSION_PATCH} + 1")
   endif()
-  set(QIR-EE_SHORT_VERSION
+  set(QIREE_SHORT_VERSION
     "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${_patch}-dev"
   )
 endif()
@@ -175,14 +184,20 @@ configure_file("config.json.in" "config.json" @ONLY)
 
 set(DOXYGEN_GENERATE_HTML NO)
 set(DOXYGEN_GENERATE_XML YES)
+set(DOXYGEN_COLLABORATION_GRAPH NO)
+set(DOXYGEN_CLASS_GRAPH NO)
+set(DOXYGEN_INCLUDED_BY_GRAPH NO)
+set(DOXYGEN_INCLUDE_GRAPH NO)
 set(DOXYGEN_XML_PROGRAMLISTING NO)
 
-# Annotations break breathe parsing
-foreach(_var
-  CELER_FUNCTION CELER_FORCEINLINE CELER_FORCEINLINE_FUNCTION CELER_CONSTEXPR_FUNCTION
-  [[maybe_unused]] CFIF_)
-  list(APPEND DOXYGEN_PREDEFINED "${_var}=")
-endforeach()
+set(DOXYGEN_ALIASES
+  "cite{1}=\"\\verbatim embed:rst:inline :cite:p:`\\1` \\endverbatim \""
+  "citep{2}=\"\\verbatim embed:rst:inline :cite:p:`\\1` \\endverbatim \""
+  "citet{2}=\"\\verbatim embed:rst:inline :cite:t:`\\1` \\endverbatim \""
+  "rst=\"^^\\verbatim embed:rst^^\""
+  "endrst=\"^^\\endverbatim \""
+)
+
 # Only process top levels
 file(GLOB _DOXYGEN_SOURCE
   "${PROJECT_SOURCE_DIR}/src/*/*.hh"

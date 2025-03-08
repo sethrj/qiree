@@ -1,0 +1,69 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {"major": 3, "minor": 23, "patch": 0},
+  "configurePresets": [
+    {
+      "name": "base",
+      "displayName": "ubuntu options for clang/gcc",
+      "inherits": ["default"],
+      "binaryDir": "${sourceDir}/build",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS":     {"type": "BOOL", "value": "ON"},
+        "QIREE_BUILD_TESTS": {"type": "BOOL", "value": "ON"},
+        "QIREE_BUILD_DOCS":  {"type": "BOOL", "value": "OFF"},
+        "QIREE_DEBUG":       {"type": "BOOL", "value": "ON"},
+        "QIREE_TEST_VERBOSE":{"type": "BOOL", "value": "OFF"},
+        "QIREE_USE_XACC":    {"type": "BOOL", "value": "OFF"},
+        "QIREE_USE_QSIM": {"type": "BOOL", "value": "ON"},
+        "QIREE_HOSTNAME": "ubuntu-github",
+        "QIREE_TEST_XML": "$env{GITHUB_WORKSPACE}/test-output/google/",
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_CXX_EXTENSIONS": {"type": "BOOL", "value": "OFF"},
+        "CMAKE_CXX_FLAGS": "-Wall -Wextra -pedantic -Werror -Wno-error=deprecated-declarations",
+        "CMAKE_CXX_STANDARD": "17",
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/install"
+      }
+    },
+    {
+      "name": "doc",
+      "inherits": ["base"],
+      "displayName": "Build only documentation",
+      "cacheVariables": {
+        "QIREE_BUILD_DOCS":  {"type": "BOOL", "value": "ON"},
+        "QIREE_DEBUG":       {"type": "BOOL", "value": "OFF"},
+        "QIREE_DOXYGEN_BUILD_TESTS":  {"type": "BOOL", "value": "ON"}
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "base",
+      "configurePreset": "base",
+      "nativeToolOptions": ["-k0"],
+      "verbose": true
+    },
+    {
+      "name": "doc",
+      "inherits": "base"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "base",
+      "configurePreset": "base",
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false,
+        "timeout": 15,
+        "jobs": 4
+      },
+      "output": {
+        "maxFailedTestOutputSize": 1048576,
+        "maxPassedTestOutputSize": 2048,
+        "outputOnFailure": true
+      }
+    }
+  ]
+}
