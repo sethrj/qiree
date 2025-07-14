@@ -23,11 +23,6 @@ CQiree* qiree_create()
     return reinterpret_cast<CQiree*>(new QM());
 }
 
-void qiree_destroy(CQiree* manager)
-{
-    delete reinterpret_cast<QM*>(manager);
-}
-
 QireeReturnCode qiree_load_module_from_memory(CQiree* manager,
                                               char const* data_contents,
                                               size_t length)
@@ -83,6 +78,8 @@ qiree_max_result_items(CQiree* manager, int num_shots, size_t* result)
 {
     if (!manager)
         return QIREE_NOT_READY;
+    if (!result)
+        return QIREE_INVALID_INPUT;
 
     auto* cpp_manager = reinterpret_cast<QM*>(manager);
     return static_cast<QireeReturnCode>(
@@ -108,9 +105,18 @@ QireeReturnCode qiree_setup_executor(CQiree* manager,
         cpp_manager->setup_executor(backend_sv, config_sv));
 }
 
+QireeReturnCode qiree_execute(CQiree* manager, int num_shots)
+{
+    if (!manager)
+        return QIREE_NOT_READY;
+
+    auto* cpp_manager = reinterpret_cast<QM*>(manager);
+    return static_cast<QireeReturnCode>(cpp_manager->execute(num_shots));
+}
+
 QireeReturnCode qiree_save_result_items(CQiree* manager,
-                                        size_t max_items,
-                                        CQireeResultRecord* encoded)
+                                        CQireeResultRecord* encoded,
+                                        size_t max_items)
 {
     if (!manager)
         return QIREE_NOT_READY;
@@ -122,7 +128,12 @@ QireeReturnCode qiree_save_result_items(CQiree* manager,
     auto* cpp_manager = reinterpret_cast<QM*>(manager);
     auto* encoded_tuples = reinterpret_cast<QM::ResultRecord*>(encoded);
     return static_cast<QireeReturnCode>(
-        cpp_manager->save_result_items(max_items, encoded_tuples));
+        cpp_manager->save_result_items(encoded_tuples, max_items));
+}
+
+void qiree_destroy(CQiree* manager)
+{
+    delete reinterpret_cast<QM*>(manager);
 }
 
 }  // extern "C"
