@@ -1,0 +1,13 @@
+SCRIPT_FILE=${BASH_SOURCE[0]}
+PYTHON_EXE=$(command -v python || command -v python3)
+if [[ -z "$PYTHON_EXE" ]]; then
+    echo "No Python is detected! Cannot source" 
+    return
+fi
+SCRIPT=$($PYTHON_EXE -c "import os,sys; print(os.path.realpath(os.path.expanduser(sys.argv[1])))" ${SCRIPT_FILE})
+export QIREE=$(dirname -- ${SCRIPT})/build
+export IRIS_LIB_QIREE=$QIREE/lib/libcqiree.so
+export LD_LIBRARY_PATH=.:$QIREE/lib:$QIREE/lib64:$LD_LIBRARY_PATH
+echo "*********************** QIREE Environent *********************"
+echo "QIREE: $QIREE"
+echo "*************************************************************"
