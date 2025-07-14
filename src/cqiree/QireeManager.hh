@@ -8,7 +8,10 @@
 #pragma once
 
 #include <array>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <string>
 #include <string_view>
 
 namespace qiree
