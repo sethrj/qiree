@@ -141,8 +141,7 @@ QireeManager::setup_executor(std::string_view backend,
     }
     if (execute_)
     {
-        execute_ = nullptr; 
-        //CQIREE_FAIL(not_ready, "cannot create executor again");
+        CQIREE_FAIL(not_ready, "cannot create executor again");
     }
 
     try
